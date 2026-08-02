@@ -425,7 +425,9 @@
     flex:1 1 160px;
     font-family:'Work Sans', sans-serif;
     font-size:16px;
-    padding:11px 14px;
+    line-height:1.3;
+    height:44px;
+    padding:0 14px;
     border:1px solid rgba(42,32,19,0.35);
     background:var(--paper);
     color:var(--ink);
@@ -605,7 +607,7 @@
       </p>
       <p class="private-hint">Bagian ini cuma untuk Kania — masukkan kata kuncinya untuk membuka.</p>
       <div class="private-input-row">
-        <input type="password" id="privateInput" placeholder="kata kunci">
+        <input type="text" id="privateInput" placeholder="kata kunci" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
         <button id="privateUnlock">Buka</button>
       </div>
       <p class="private-error" id="privateError">Belum tepat — coba lagi ya.</p>
