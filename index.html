@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Selamat Bertambah Usia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340;0,9..144,560;1,9..144,420&family=Work+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F7EFDC;
+    --paper-deep:#F0E4C8;
+    --ink:#2A2013;
+    --ink-soft:#5C4B32;
+    --mustard:#C9971F;
+    --mustard-soft:#DDB552;
+    --rust:#A64A22;
+    --olive:#707A45;
+  }
+
+  *{ box-sizing:border-box; }
+  ::selection{ background:var(--mustard-soft); color:var(--ink); }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:'Work Sans', sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(ellipse at 15% -10%, rgba(201,151,31,0.16), transparent 45%),
+      radial-gradient(ellipse at 100% 10%, rgba(166,74,34,0.10), transparent 40%),
+      var(--paper);
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+
+  /* ---------- subtle drifting motes ---------- */
+  .mote{
+    position:fixed;
+    bottom:-20px;
+    width:5px; height:5px;
+    border-radius:50%;
+    background:var(--mustard-soft);
+    opacity:0;
+    z-index:1;
+    pointer-events:none;
+    animation: drift linear infinite;
+  }
+  @keyframes drift{
+    0%{ opacity:0; transform:translate(0,0); }
+    10%{ opacity:0.55; }
+    90%{ opacity:0.4; }
+    100%{ opacity:0; transform:translate(var(--dx,20px), -108vh); }
+  }
+
+  /* ---------- fine radiating lines behind hero ---------- */
+  .sunburst{
+    position:absolute;
+    top:-120px; left:50%;
+    transform:translateX(-50%);
+    width:640px; height:640px;
+    z-index:0;
+    pointer-events:none;
+    opacity:0.5;
+    animation: spin 140s linear infinite;
+  }
+  @keyframes spin{ to{ transform:translateX(-50%) rotate(360deg); } }
+
+  main{
+    position:relative; z-index:2;
+    max-width:600px; margin:0 auto;
+    padding: 76px 28px 100px;
+    text-align:center;
+  }
+
+  .eyebrow{
+    font-family:'Work Sans', sans-serif;
+    font-size:0.72rem;
+    letter-spacing:0.28em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 0 28px;
+    opacity:0;
+    animation: rise 0.8s cubic-bezier(.22,1,.36,1) 0.15s forwards;
+  }
+  .eyebrow::before, .eyebrow::after{
+    content:"";
+    display:inline-block;
+    width:26px; height:1px;
+    background:var(--ink-soft);
+    vertical-align:middle;
+    margin:0 10px 3px;
+    opacity:0.5;
+  }
+
+  @keyframes rise{
+    to{ opacity:1; transform:translateY(0); }
+  }
+  .eyebrow, .name-line, .card, .surprise-btn, footer{
+    transform:translateY(14px);
+  }
+
+  /* ---------- signature: line-art sunflower ---------- */
+  .flower-hero{
+    width:min(300px, 62vw);
+    margin:0 auto 8px;
+  }
+  .flower-hero svg{ width:100%; height:auto; display:block; overflow:visible; }
+
+  .petal-line{
+    fill: transparent;
+    stroke: var(--ink);
+    stroke-width:1.1;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+  }
+  .petal-fill{
+    fill: var(--mustard-soft);
+    opacity:0;
+    transition: opacity 1s ease;
+  }
+  .center-fill{
+    fill: var(--rust);
+    opacity:0;
+    transition: opacity 0.8s ease 0.4s;
+  }
+  .center-line{
+    fill:none; stroke:var(--ink); stroke-width:1.1;
+  }
+  .stem-line{
+    fill:none; stroke:var(--olive); stroke-width:1.3; stroke-linecap:round;
+    opacity:0;
+    transition: opacity 0.6s ease 1.4s;
+  }
+  .petals-group{
+    transform-origin: 150px 150px;
+    animation: breathe 9s ease-in-out infinite 2.4s;
+  }
+  @keyframes breathe{
+    0%,100%{ transform:rotate(0deg) scale(1); }
+    50%{ transform:rotate(1.4deg) scale(1.012); }
+  }
+
+  .center-fill, .center-line{ cursor:pointer; }
+
+  /* ---------- secret note (easter egg) ---------- */
+  .secret-note{
+    position:fixed;
+    top:28px; left:50%;
+    width:min(320px, 84vw);
+    margin:0;
+    padding:18px 20px 16px;
+    background:#FBF6E7;
+    border:1px solid rgba(42,32,19,0.15);
+    box-shadow: 0 14px 32px rgba(42,32,19,0.18);
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-size:0.95rem;
+    line-height:1.6;
+    color:var(--ink-soft);
+    text-align:left;
+    z-index:20;
+    cursor:pointer;
+    opacity:0;
+    transform:translate(-50%,-16px) rotate(-1.2deg);
+    pointer-events:none;
+    transition: opacity 0.45s ease, transform 0.45s ease;
+  }
+  .secret-note.show{
+    opacity:1;
+    transform:translate(-50%,0) rotate(-1.2deg);
+    pointer-events:auto;
+  }
+  .secret-note::before{
+    content:"";
+    position:absolute;
+    top:-10px; left:50%;
+    transform:translateX(-50%) rotate(-3deg);
+    width:56px; height:16px;
+    background:rgba(201,151,31,0.35);
+  }
+  .secret-note::after{
+    content:"ketuk untuk menutup";
+    display:block;
+    margin-top:10px;
+    font-family:'Work Sans', sans-serif;
+    font-style:normal;
+    font-size:0.65rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    opacity:0.55;
+  }
+
+  /* ---------- headline ---------- */
+  .name-line{
+    font-family:'Fraunces', serif;
+    font-optical-sizing:auto;
+    font-weight:340;
+    font-style:italic;
+    font-size: clamp(1.05rem, 3.6vw, 1.3rem);
+    color: var(--ink-soft);
+    margin: 22px 0 2px;
+    opacity:0;
+    animation: rise 0.9s cubic-bezier(.22,1,.36,1) 1.7s forwards;
+  }
+
+  h1{
+    font-family:'Fraunces', serif;
+    font-optical-sizing:auto;
+    font-weight:560;
+    font-size: clamp(2.6rem, 9vw, 4.1rem);
+    line-height:1.02;
+    letter-spacing:-0.01em;
+    color: var(--ink);
+    margin: 0 0 22px;
+  }
+  h1 span{
+    display:block;
+    opacity:0;
+    transform:translateY(22px);
+    animation: rise 0.9s cubic-bezier(.22,1,.36,1) forwards;
+  }
+  h1 span:nth-child(1){ animation-delay:1.85s; }
+  h1 span:nth-child(2){
+    animation-delay:2.0s;
+    font-style:italic;
+    font-weight:420;
+    color:var(--rust);
+  }
+
+  .rule{
+    width:48px; height:1px;
+    background:var(--ink-soft);
+    opacity:0.4;
+    margin:0 auto 28px;
+    transform:scaleX(0);
+    animation: unfold 0.7s ease 2.25s forwards;
+  }
+  @keyframes unfold{ to{ transform:scaleX(1); } }
+
+  /* ---------- message card ---------- */
+  .card{
+    text-align:left;
+    margin: 0 0 36px;
+    opacity:0;
+    animation: rise 0.9s cubic-bezier(.22,1,.36,1) 2.45s forwards;
+  }
+  .card p{
+    font-size:1.05rem;
+    line-height:1.85;
+    color:var(--ink-soft);
+    margin:0 0 16px;
+  }
+  .card p:first-of-type::first-letter{
+    font-family:'Fraunces', serif;
+    font-size:2.6rem;
+    font-weight:560;
+    float:left;
+    line-height:0.78;
+    padding:6px 6px 0 0;
+    color:var(--rust);
+  }
+  .card p:last-child{ margin-bottom:0; }
+  .signature{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-weight:420;
+    color:var(--ink);
+    font-size:1.1rem;
+  }
+
+  /* ---------- button ---------- */
+  .surprise-btn{
+    font-family:'Work Sans', sans-serif;
+    font-size:0.85rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color: var(--paper);
+    background: var(--ink);
+    border:none;
+    padding:16px 34px;
+    border-radius:2px;
+    cursor:pointer;
+    transition: background 0.25s ease, transform 0.2s ease, letter-spacing 0.25s ease;
+    opacity:0;
+    animation: rise 0.9s cubic-bezier(.22,1,.36,1) 2.65s forwards;
+  }
+  .surprise-btn:hover{ background:var(--rust); letter-spacing:0.2em; }
+  .surprise-btn:active{ transform:scale(0.98); }
+
+  .btn-row{
+    display:flex; gap:12px; justify-content:center; flex-wrap:wrap;
+  }
+  .cake-btn{
+    font-family:'Work Sans', sans-serif;
+    font-size:0.85rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color: var(--ink);
+    background: transparent;
+    border:1px solid var(--ink);
+    padding:15px 30px;
+    border-radius:2px;
+    cursor:pointer;
+    transition: background 0.25s ease, color 0.25s ease, letter-spacing 0.25s ease;
+    opacity:0;
+    animation: rise 0.9s cubic-bezier(.22,1,.36,1) 2.75s forwards;
+  }
+  .cake-btn:hover{ background:var(--ink); color:var(--paper); letter-spacing:0.2em; }
+  .cake-btn:active{ transform:scale(0.98); }
+
+  /* ---------- birthday cake ---------- */
+  .cake-wrap{
+    max-height:0;
+    overflow:hidden;
+    opacity:0;
+    transition: max-height 0.7s cubic-bezier(.22,1,.36,1), opacity 0.6s ease, margin 0.7s ease;
+    margin-top:0;
+  }
+  .cake-wrap.open{
+    max-height:340px;
+    opacity:1;
+    margin-top:34px;
+  }
+  .cake-wrap svg{ width:min(220px, 48vw); height:auto; display:block; margin:0 auto; overflow:visible; }
+
+  .cake-line{ fill:none; stroke:var(--ink); stroke-width:1.1; stroke-linecap:round; stroke-linejoin:round; }
+  .cake-icing{ fill:var(--paper-deep); stroke:var(--ink); stroke-width:1.1; stroke-linejoin:round; }
+  .cake-tier-1{ fill:var(--mustard-soft); stroke:var(--ink); stroke-width:1.1; }
+  .cake-tier-2{ fill:var(--rust); stroke:var(--ink); stroke-width:1.1; opacity:0.9; }
+  .candle{ fill:var(--olive); }
+  .flame{
+    fill:var(--mustard);
+    transform-origin: center bottom;
+    animation: flicker 1.6s ease-in-out infinite;
+  }
+  .flame:nth-child(odd){ animation-duration:1.9s; }
+  @keyframes flicker{
+    0%,100%{ transform:scaleY(1) scaleX(1) rotate(0deg); opacity:1; }
+    30%{ transform:scaleY(1.12) scaleX(0.92) rotate(-2deg); opacity:0.92; }
+    60%{ transform:scaleY(0.94) scaleX(1.05) rotate(2deg); opacity:1; }
+  }
+  .flame.blown{
+    animation:none;
+    opacity:0;
+    transform:scaleY(0.2);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .smoke{
+    fill:none;
+    stroke:var(--ink-soft);
+    stroke-width:1;
+    stroke-linecap:round;
+    opacity:0;
+  }
+  .smoke.rise{
+    animation: smokeUp 1.4s ease-out forwards;
+  }
+  @keyframes smokeUp{
+    0%{ opacity:0.5; transform:translateY(0) scale(1); }
+    100%{ opacity:0; transform:translateY(-22px) scale(1.4); }
+  }
+
+  .wish-text{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-size:0.95rem;
+    color:var(--ink-soft);
+    text-align:center;
+    margin-top:12px;
+    opacity:0;
+    transition: opacity 0.6s ease;
+  }
+  .wish-text.show{ opacity:1; }
+
+  /* ---------- private note (locked) ---------- */
+  .private-wrap{
+    text-align:left;
+    margin: 40px 0 0;
+    padding: 26px 24px;
+    background: rgba(255,255,255,0.35);
+    border:1px dashed rgba(42,32,19,0.3);
+    position:relative;
+  }
+  .private-label{
+    display:flex; align-items:center; gap:8px;
+    font-size:0.72rem;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 0 14px;
+  }
+  .private-label svg{ width:16px; height:16px; flex-shrink:0; }
+
+  .private-hint{
+    font-size:0.88rem;
+    color:var(--ink-soft);
+    opacity:0.75;
+    margin:0 0 16px;
+    font-style:italic;
+    font-family:'Fraunces', serif;
+  }
+
+  .private-input-row{
+    display:flex; gap:10px; flex-wrap:wrap;
+  }
+  .private-input-row input{
+    flex:1 1 160px;
+    font-family:'Work Sans', sans-serif;
+    font-size:0.92rem;
+    padding:11px 14px;
+    border:1px solid rgba(42,32,19,0.35);
+    background:var(--paper);
+    color:var(--ink);
+    outline:none;
+  }
+  .private-input-row input:focus{ border-color:var(--rust); }
+  .private-input-row button{
+    font-family:'Work Sans', sans-serif;
+    font-size:0.8rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--paper);
+    background:var(--ink);
+    border:none;
+    padding:11px 22px;
+    cursor:pointer;
+    transition: background 0.2s ease;
+  }
+  .private-input-row button:hover{ background:var(--rust); }
+
+  .private-error{
+    font-size:0.8rem;
+    color:var(--rust);
+    margin:10px 0 0;
+    opacity:0;
+    height:0;
+    overflow:hidden;
+    transition: opacity 0.3s ease;
+  }
+  .private-error.show{ opacity:1; height:auto; margin-top:10px; }
+
+  .private-lock.shake{ animation: shake 0.4s ease; }
+  @keyframes shake{
+    0%,100%{ transform:translateX(0); }
+    25%{ transform:translateX(-6px); }
+    75%{ transform:translateX(6px); }
+  }
+
+  .private-content{
+    display:none;
+    font-size:1.02rem;
+    line-height:1.85;
+    color:var(--ink-soft);
+    white-space:pre-line;
+  }
+  .private-content.show{ display:block; animation: rise 0.6s cubic-bezier(.22,1,.36,1) forwards; }
+  .private-content .signature{ display:block; margin-top:14px; }
+
+  .private-lock.hidden{ display:none; }
+
+  footer{
+    position:relative; z-index:2;
+    text-align:center;
+    padding-bottom:24px;
+    font-size:0.72rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    opacity:0;
+    animation: rise 0.9s cubic-bezier(.22,1,.36,1) 2.85s forwards;
+  }
+
+  #confetti-canvas{
+    position:fixed; inset:0; width:100%; height:100%;
+    pointer-events:none; z-index:10;
+  }
+</style>
+</head>
+<body>
+
+<div class="sunburst" id="sunburst"></div>
+<canvas id="confetti-canvas"></canvas>
+
+<main>
+
+  <p class="eyebrow">Sebuah perayaan kecil</p>
+
+  <div class="flower-hero">
+    <svg viewBox="0 0 300 340" xmlns="http://www.w3.org/2000/svg">
+      <g class="stem-line">
+        <path d="M150,230 C146,255 154,275 148,300" />
+        <path d="M150,258 C165,262 172,272 178,268" />
+        <path d="M148,278 C133,282 126,292 118,290" />
+      </g>
+      <g class="petals-group" id="petalsGroup"></g>
+      <circle class="center-fill" cx="150" cy="150" r="34" />
+      <circle class="center-line" cx="150" cy="150" r="34" />
+    </svg>
+  </div>
+
+  <p class="name-line">untuk Kania Rahma Ditta</p>
+
+  <h1><span>Selamat</span><span>Ulang Tahun</span></h1>
+  <div class="rule"></div>
+
+  <div class="card">
+    <p>Haiiiiiii kania, Selamat ulang tahun yahh, yang ke 19 tahun bukan yah? Oh iya ini doa dari seeorang teman mu, "Kamu harus tetap kuat yah walau banyak cobaan nya, sehat selalu, keinginannya terkabul, bisa ke jepang, dan keinginan yang lain nya"</p>
+    <p>Semoga ulang tahun ini isinya lebih banyak ketawa daripada capek, lebih banyak hal yang bikin kamu yakin sama diri sendiri, dan tetap ada ruang buat jadi berantakan tanpa perlu jelasin apa-apa ke siapa-siapa. Aku di sini, seperti biasa.</p>
+    <p class="signature">— selamat ulang tahun, kaniaa</p>
+  </div>
+
+  <div class="btn-row">
+    <button class="cake-btn" id="cakeBtn">Ayo Buruan Nyalain Kue nya</button>
+  </div>
+
+  <div class="cake-wrap" id="cakeWrap">
+    <svg viewBox="0 0 220 190" xmlns="http://www.w3.org/2000/svg">
+      <ellipse class="cake-line" cx="110" cy="172" rx="78" ry="10" fill="none" />
+      <path class="cake-tier-2" d="M40,150 L44,110 Q110,98 176,110 L180,150 Q110,164 40,150 Z" />
+      <path class="cake-icing" d="M44,110 Q60,100 76,110 Q92,100 108,110 Q124,100 140,110 Q156,100 176,110 L176,116 Q110,104 44,116 Z" />
+      <path class="cake-tier-1" d="M58,104 L61,72 Q110,62 162,72 L165,104 Q110,116 58,104 Z" />
+      <path class="cake-icing" d="M61,72 Q74,64 86,72 Q98,64 110,72 Q122,64 134,72 Q146,64 162,72 L162,78 Q110,66 61,78 Z" />
+      <g id="candles">
+        <rect class="candle" x="86" y="46" width="5" height="24" rx="1.5" />
+        <rect class="candle" x="107" y="40" width="5" height="30" rx="1.5" />
+        <rect class="candle" x="128" y="46" width="5" height="24" rx="1.5" />
+        <path class="flame" d="M88.5,46 C84,40 84,34 88.5,29 C93,34 93,40 88.5,46 Z" />
+        <path class="flame" d="M109.5,40 C105,34 105,28 109.5,23 C114,28 114,34 109.5,40 Z" />
+        <path class="flame" d="M130.5,46 C126,40 126,34 130.5,29 C135,34 135,40 130.5,46 Z" />
+        <path class="smoke" id="smoke1" d="M88.5,29 Q84,20 90,12" />
+        <path class="smoke" id="smoke2" d="M109.5,23 Q105,14 111,6" />
+        <path class="smoke" id="smoke3" d="M130.5,29 Q126,20 132,12" />
+      </g>
+    </svg>
+    <p class="wish-text" id="wishText">Tiup lilinnya, Kania — semoga apa pun yang kamu harap barusan benar-benar sampai.</p>
+  </div>
+
+  <div class="secret-note" id="secretNote">
+    Psst — kamu klik bunga mataharinya lima kali. Sejujurnya, kamu itu jauh lebih hangat dan lebih berarti dari yang kamu sadari. Selamat ulang tahun, beneran.
+  </div>
+
+  <div class="private-wrap">
+    <div class="private-lock" id="privateLock">
+      <p class="private-label">
+        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="4" y="9" width="12" height="9" rx="1.2" stroke="currentColor" stroke-width="1.3"/>
+          <path d="M6.5,9 V6 a3.5,3.5 0 0 1 7,0 v3" stroke="currentColor" stroke-width="1.3" fill="none"/>
+        </svg>
+        Catatan pribadi
+      </p>
+      <p class="private-hint">Bagian ini cuma untuk Kania — masukkan kata kuncinya untuk membuka.</p>
+      <div class="private-input-row">
+        <input type="password" id="privateInput" placeholder="kata kunci">
+        <button id="privateUnlock">Buka</button>
+      </div>
+      <p class="private-error" id="privateError">Belum tepat — coba lagi ya.</p>
+    </div>
+    <div class="private-content" id="privateContent">
+      <p>halo kania, apa kabar? baik baik aja kan? sehat kan? harus dong, udah dapat kerja belum? maaf yah aku terlalu apa sih yah namanya, aku juga bingung, kita udah jarang banget komunikasi wkwkwk, ngga apa apa deh, kalau buat kamu nyaman, aku ngga terlalu obsesif ke kamu, yang penting kamu sehat sehat yah, aku mungkin akan jarang main hp kayaknya, oh iya, pesan ini kasih balasan emoji aja atau stiker aja yah, kalau mau ngilang dari aku ngga apa apa, cut off aja, wkwkwk</p>
+        <span class="signature"> daahhhhh kaniaaaaaaa</span>
+    </div>
+  </div>
+
+</main>
+
+<footer>Dibuat oleh teman mu</footer>
+
+<script>
+  /* ---- Build the line-art sunflower: 13 petals radiating from center ---- */
+  const NS = "http://www.w3.org/2000/svg";
+  const petalsGroup = document.getElementById('petalsGroup');
+  const cx = 150, cy = 150, count = 13;
+
+  for(let i=0;i<count;i++){
+    const angle = (360/count)*i;
+    const g = document.createElementNS(NS,'g');
+    g.setAttribute('transform', `rotate(${angle} ${cx} ${cy})`);
+
+    // petal path: elongated leaf shape pointing outward from center
+    const path = document.createElementNS(NS,'path');
+    const d = `M ${cx} ${cy-18}
+               C ${cx-16} ${cy-55}, ${cx-10} ${cy-96}, ${cx} ${cy-108}
+               C ${cx+10} ${cy-96}, ${cx+16} ${cy-55}, ${cx} ${cy-18} Z`;
+    path.setAttribute('d', d);
+    path.setAttribute('class','petal-fill');
+    const path2 = path.cloneNode();
+    path2.setAttribute('class','petal-line');
+
+    g.appendChild(path);
+    g.appendChild(path2);
+    petalsGroup.appendChild(g);
+  }
+
+  /* ---- Draw-in animation for line art using stroke-dasharray ---- */
+  function drawFlower(withDelay){
+    const lines = document.querySelectorAll('.petal-line, .center-line');
+    lines.forEach((line, i) => {
+      const len = line.getTotalLength();
+      line.style.strokeDasharray = len;
+      line.style.strokeDashoffset = len;
+      line.style.transition = 'none';
+      requestAnimationFrame(()=>{
+        line.style.transition = `stroke-dashoffset ${0.9 + Math.random()*0.4}s cubic-bezier(.22,1,.36,1) ${withDelay ? (0.05 + i*0.045) : (i*0.02)}s`;
+        line.style.strokeDashoffset = 0;
+      });
+    });
+    document.querySelectorAll('.petal-fill').forEach(p=> p.style.opacity = 0);
+    document.querySelector('.center-fill').style.opacity = 0;
+    setTimeout(()=>{
+      document.querySelectorAll('.petal-fill').forEach((p,i)=>{
+        setTimeout(()=>{ p.style.opacity = 1; }, i*35);
+      });
+      document.querySelector('.center-fill').style.opacity = 1;
+      document.querySelector('.stem-line').style.opacity = 1;
+    }, withDelay ? 900 : 400);
+  }
+
+  window.addEventListener('load', () => {
+    drawFlower(true);
+    // tetap mekar ulang secara berkala, di luar goyangan halus yang terus berjalan
+    setInterval(()=> drawFlower(false), 5000);
+  });
+
+  /* ---- Easter egg: click the flower's center 5 times ---- */
+  let flowerClicks = 0;
+  let flowerClickTimer = null;
+  function armEasterEgg(){
+    const targets = document.querySelectorAll('.center-fill, .center-line');
+    const note = document.getElementById('secretNote');
+    note.addEventListener('click', () => note.classList.remove('show'));
+    targets.forEach(t => t.addEventListener('click', () => {
+      flowerClicks++;
+      clearTimeout(flowerClickTimer);
+      flowerClickTimer = setTimeout(()=> flowerClicks = 0, 2200);
+      if(flowerClicks >= 5){
+        flowerClicks = 0;
+        note.classList.add('show');
+      }
+    }));
+  }
+
+  /* ---- Cake: reveal, light candles, blow out on second click ---- */
+  const cakeBtn = document.getElementById('cakeBtn');
+  const cakeWrap = document.getElementById('cakeWrap');
+  const wishText = document.getElementById('wishText');
+  let cakeState = 'hidden'; // hidden -> lit -> blown
+
+  cakeBtn.addEventListener('click', () => {
+    if(cakeState === 'hidden'){
+      cakeWrap.classList.add('open');
+      cakeState = 'lit';
+      cakeBtn.textContent = 'Tiup lilin & buat harapan';
+    } else if(cakeState === 'lit'){
+      document.querySelectorAll('.flame').forEach(f => f.classList.add('blown'));
+      ['smoke1','smoke2','smoke3'].forEach((id,i)=>{
+        const s = document.getElementById(id);
+        setTimeout(()=> s.classList.add('rise'), i*90);
+      });
+      wishText.classList.add('show');
+      burstConfetti();
+      cakeState = 'blown';
+      cakeBtn.textContent = 'Nyalakan lagi';
+    } else {
+      document.querySelectorAll('.flame').forEach(f => f.classList.remove('blown'));
+      document.querySelectorAll('.smoke').forEach(s => s.classList.remove('rise'));
+      wishText.classList.remove('show');
+      cakeState = 'lit';
+      cakeBtn.textContent = 'Tiup lilin & buat harapan';
+    }
+  });
+
+  armEasterEgg();
+
+  /* ---- Private note: simple client-side passcode gate ---- */
+  const PRIVATE_PASSCODE = "nailong"; // ganti sesuai kata kunci yang kamu mau
+  const privateLock = document.getElementById('privateLock');
+  const privateContent = document.getElementById('privateContent');
+  const privateInput = document.getElementById('privateInput');
+  const privateError = document.getElementById('privateError');
+
+  function tryUnlockPrivate(){
+    const val = privateInput.value.trim().toLowerCase();
+    if(val === PRIVATE_PASSCODE.toLowerCase()){
+      privateLock.classList.add('hidden');
+      privateContent.classList.add('show');
+    } else {
+      privateError.classList.add('show');
+      privateLock.classList.remove('shake');
+      void privateLock.offsetWidth; // restart animation
+      privateLock.classList.add('shake');
+    }
+  }
+  document.getElementById('privateUnlock').addEventListener('click', tryUnlockPrivate);
+  privateInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') tryUnlockPrivate(); });
+
+  /* ---- Sunburst fine radiating lines (drawn once as background) ---- */
+  const sunburst = document.getElementById('sunburst');
+  const svgNS = "http://www.w3.org/2000/svg";
+  const sb = document.createElementNS(svgNS,'svg');
+  sb.setAttribute('viewBox','0 0 640 640');
+  sb.setAttribute('width','100%');
+  sb.setAttribute('height','100%');
+  const rayCount = 48;
+  for(let i=0;i<rayCount;i++){
+    const a = (360/rayCount)*i;
+    const line = document.createElementNS(svgNS,'line');
+    const long = i % 4 === 0;
+    line.setAttribute('x1', 320);
+    line.setAttribute('y1', long ? 40 : 70);
+    line.setAttribute('x2', 320);
+    line.setAttribute('y2', 6);
+    line.setAttribute('stroke', '#C9971F');
+    line.setAttribute('stroke-width', '1');
+    line.setAttribute('opacity', long ? '0.35' : '0.18');
+    line.setAttribute('transform', `rotate(${a} 320 320)`);
+    sb.appendChild(line);
+  }
+  sunburst.appendChild(sb);
+
+  /* ---- drifting motes ---- */
+  for(let i=0;i<9;i++){
+    const m = document.createElement('div');
+    m.className = 'mote';
+    m.style.left = (Math.random()*100)+'vw';
+    m.style.setProperty('--dx', (Math.random()*60-30)+'px');
+    m.style.animationDuration = (11+Math.random()*9)+'s';
+    m.style.animationDelay = (Math.random()*10)+'s';
+    document.body.appendChild(m);
+  }
+
+  /* ---- refined confetti: thin paper-strip particles ---- */
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  function resize(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+
+  let particles = [];
+  const colors = ['#C9971F','#A64A22','#707A45','#2A2013','#DDB552'];
+
+  function burstConfetti(){
+    for(let i=0;i<60;i++){
+      particles.push({
+        x: canvas.width/2 + (Math.random()-0.5)*80,
+        y: canvas.height*0.32,
+        vx: (Math.random()-0.5)*7,
+        vy: (Math.random()-1.1)*7,
+        w: 3+Math.random()*3,
+        h: 9+Math.random()*8,
+        color: colors[Math.floor(Math.random()*colors.length)],
+        rot: Math.random()*360,
+        vrot: (Math.random()-0.5)*10,
+        life:0
+      });
+    }
+  }
+
+  function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.16;
+      p.rot += p.vrot;
+      p.life++;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, 1 - p.life/220);
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.restore();
+    });
+    particles = particles.filter(p=>p.y < canvas.height+40 && p.life < 220);
+    requestAnimationFrame(animate);
+  }
+  animate();
+</script>
+
+</body>
+</html>
